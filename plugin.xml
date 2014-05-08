@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin xmlns="http://www.phonegap.com/ns/plugins/1.0"
+    id="com.perak.plugin.Disco"
+    version="1.0.0">
+
+    <name>DiscoPlugin</name>
+
+  <description>
+    Disco Plugin
+  </description>
+
+  <asset src="www/DiscoPlugin.js" target="plugins/DiscoPlugin.js" />
+
+  <engines>
+    <engine name="cordova" version=">=2.7.0" />
+  </engines>
+
+  <!-- android -->
+  <platform name="android">
+    <config-file target="res/xml/config.xml" parent="/*">
+	    <feature name="Disco">
+	        <param name="android-package" value="com.perak.plugin.Disco"/>
+	    </feature>
+    </config-file>
+
+    <source-file src="src/android/com/perak/plugin/NsdHelper.java" target-dir="src/com/perak/plugin" />
+    <source-file src="src/android/com/perak/plugin/ChatConnection.java" target-dir="src/com/perak/plugin" />
+    <source-file src="src/android/com/perak/plugin/Disco.java" target-dir="src/com/perak/plugin" />
+  </platform>
+</plugin>
