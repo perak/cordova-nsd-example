@@ -12,8 +12,7 @@ import android.util.Log;
 public class NsdHelper {
 
     Context mContext;
-    private Handler mUpdateHandler;
-    private Handler mLogHandler;
+    private Handler mHandler;
 
     NsdManager mNsdManager;
     NsdManager.ResolveListener mResolveListener;
@@ -27,10 +26,9 @@ public class NsdHelper {
 
     NsdServiceInfo mService;
 
-    public NsdHelper(Context context, Handler updateHandler, Handler logHandler) {
+    public NsdHelper(Context context, Handler handler) {
         mContext = context;
-        mUpdateHandler = updateHandler;
-        mLogHandler = logHandler;
+        mHandler = handler;
         mNsdManager = (NsdManager) context.getSystemService(Context.NSD_SERVICE);
     }
 
@@ -46,16 +44,16 @@ public class NsdHelper {
 
             @Override
             public void onDiscoveryStarted(String regType) {
-                logMessage(TAG, "Service discovery started");
+				sendNotification("log", "Service discovery started");
             }
 
             @Override
             public void onServiceFound(NsdServiceInfo service) {
-                logMessage(TAG, "Service discovery success" + service);
+				sendNotification("log", "Service discovery success" + service);
                 if (!service.getServiceType().equals(SERVICE_TYPE)) {
-                    logMessage(TAG, "Unknown Service Type: " + service.getServiceType());
+					sendNotification("error", "Unknown Service Type: " + service.getServiceType());
                 } else if (service.getServiceName().equals(mServiceName)) {
-                    logMessage(TAG, "Same machine: " + mServiceName);
+					sendNotification("error", "Same machine: " + mServiceName);
                 } else if (service.getServiceName().contains(mServiceName)){
                     mNsdManager.resolveService(service, mResolveListener);
                 }
@@ -63,7 +61,7 @@ public class NsdHelper {
 
             @Override
             public void onServiceLost(NsdServiceInfo service) {
-                logMessage(TAG, "service lost" + service);
+				sendNotification("log", "service lost" + service);
                 if (mService == service) {
                     mService = null;
                 }
@@ -71,18 +69,18 @@ public class NsdHelper {
             
             @Override
             public void onDiscoveryStopped(String serviceType) {
-                logMessage(TAG, "Discovery stopped: " + serviceType);        
+				sendNotification("log", "Discovery stopped: " + serviceType);        
             }
 
             @Override
             public void onStartDiscoveryFailed(String serviceType, int errorCode) {
-                logMessage(TAG, "Discovery failed: Error code:" + errorCode);
+				sendNotification("error", "Discovery failed: Error code:" + errorCode);
                 mNsdManager.stopServiceDiscovery(this);
             }
 
             @Override
             public void onStopDiscoveryFailed(String serviceType, int errorCode) {
-                logMessage(TAG, "Discovery failed: Error code:" + errorCode);
+				sendNotification("error", "Discovery failed: Error code:" + errorCode);
                 mNsdManager.stopServiceDiscovery(this);
             }
         };
@@ -93,15 +91,15 @@ public class NsdHelper {
 
             @Override
             public void onResolveFailed(NsdServiceInfo serviceInfo, int errorCode) {
-                logMessage(TAG, "Resolve failed" + errorCode);
+				sendNotification("error", "Resolve failed" + errorCode);
             }
 
             @Override
             public void onServiceResolved(NsdServiceInfo serviceInfo) {
-                logMessage(TAG, "Resolve Succeeded. " + serviceInfo);
+				sendNotification("log", "Resolve Succeeded. " + serviceInfo);
 
                 if (serviceInfo.getServiceName().equals(mServiceName)) {
-                    logMessage(TAG, "Same IP.");
+					sendNotification("log", "Same IP.");
                     return;
                 }
                 mService = serviceInfo;
@@ -114,23 +112,23 @@ public class NsdHelper {
 
             @Override
             public void onServiceRegistered(NsdServiceInfo NsdServiceInfo) {
-                logMessage(TAG, "Service registered");
                 mServiceName = NsdServiceInfo.getServiceName();
+				sendNotification("log", "Service registered: " + mServiceName);
             }
             
             @Override
             public void onRegistrationFailed(NsdServiceInfo arg0, int arg1) {
-                logMessage(TAG, "Registration failed");
+				sendNotification("error", "Service registration failed");
             }
 
             @Override
             public void onServiceUnregistered(NsdServiceInfo arg0) {
-                logMessage(TAG, "Service unregistered");
+				sendNotification("log", "Service unregistered");
             }
             
             @Override
             public void onUnregistrationFailed(NsdServiceInfo serviceInfo, int errorCode) {
-                logMessage(TAG, "Unregistration failed");
+				sendNotification("error", "Service unregistration failed");
             }
             
         };
@@ -161,13 +159,14 @@ public class NsdHelper {
         mNsdManager.unregisterService(mRegistrationListener);
     }
 
-    public void logMessage(String tag, String msg) {
+    public void sendNotification(String type, String msg) {
         Bundle messageBundle = new Bundle();
+        messageBundle.putString("type", type);
         messageBundle.putString("msg", msg);
 
         Message message = new Message();
         message.setData(messageBundle);
-        mLogHandler.sendMessage(message);
+        mHandler.sendMessage(message);
     }
 
 }

@@ -19,8 +19,7 @@ import com.perak.plugin.NsdHelper;
 public class Disco extends CordovaPlugin {
 
     NsdHelper mNsdHelper;
-    private Handler mUpdateHandler;
-    private Handler mLogHandler;
+    private Handler mHandler;
     ChatConnection mConnection;
 
     @Override
@@ -56,29 +55,33 @@ public class Disco extends CordovaPlugin {
     private void initChat(CallbackContext callbackContext) {
     	final CallbackContext cbc = callbackContext;
     	try {
-	        mUpdateHandler = new Handler() {
+	        mHandler = new Handler() {
 	                @Override
 	            public void handleMessage(Message msg) {
-	                String chatLine = msg.getData().getString("msg");
-	                PluginResult result = new PluginResult(PluginResult.Status.OK, chatLine);
-	                result.setKeepCallback(true);
-	                cbc.sendPluginResult(result);
+	            	String type = msg.getData().getString("type");
+	                String message = msg.getData().getString("msg");
+	            	if(type == "error") {
+	            		cbc.error(message);
+	            		return;
+	            	}
+
+	            	JSONObject data = new JSONObject();
+	            	try {
+		            	data.put("type", new String(type));
+		            	data.put("data", new String(message));
+	            	} catch(JSONException e) {
+
+	            	}
+
+					PluginResult result = new PluginResult(PluginResult.Status.OK, data);
+					result.setKeepCallback(true);
+					cbc.sendPluginResult(result);
 	            }
 	        };
 
-	        mLogHandler = new Handler() {
-	                @Override
-	            public void handleMessage(Message msg) {
-	                String messageLine = msg.getData().getString("msg");
-	                PluginResult result = new PluginResult(PluginResult.Status.OK, messageLine);
-	                result.setKeepCallback(true);
-	                cbc.sendPluginResult(result);
-	            }
-	        };
+	        mConnection = new ChatConnection(mHandler);
 
-	        mConnection = new ChatConnection(mUpdateHandler, mLogHandler);
-
-	        mNsdHelper = new NsdHelper(cordova.getActivity(), mUpdateHandler, mLogHandler);
+	        mNsdHelper = new NsdHelper(cordova.getActivity(), mHandler);
 	        mNsdHelper.initializeNsd();
 
     	} catch(Exception e) {
