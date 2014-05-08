@@ -52,6 +52,7 @@ Cordova **www/index.html**
 	            	<button type="button" onclick="window.initChat(function(s) { showMessage(s); }, function(e) { showError(e); }); return false;">Initialize</button>
 	            	<button type="button" onclick="window.advertizeChat(function(s) { showMessage(s); }, function(e) { showError(e); }); return false;">Advertize</button>
 	            	<button type="button" onclick="window.discoverChat(function(s) { showMessage(s); }, function(e) { showError(e); }); return false;">Discover</button>
+	            	<button type="button" onclick="window.connectChat(function(s) { showMessage(s); }, function(e) { showError(e); }); return false;">Connect</button>
 	            </div>
 	            <div>
 	            	<input type="text" id="inputBox"></input>
