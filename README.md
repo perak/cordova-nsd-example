@@ -30,17 +30,25 @@ Cordova **www/index.html**
 				}
 
 				function showError(s) {
-					alert(s);
+					var logDiv = document.getElementById("logDiv");
+					logDiv.innerHTML = "<span style=\"color: red;\">" + s + "</span><br />" + logDiv.innerHTML;
 				}
 
-				function showMessage(s) {
-					var msgDiv = document.getElementById("msgDiv");
-					msgDiv.innerHTML = msgDiv.innerHTML + s + "<br />";
+				function showMessage(o) {
+					if(o.type == "message") {
+						var msgDiv = document.getElementById("msgDiv");
+						msgDiv.innerHTML = o.data + "<br />" + msgDiv.innerHTML;
+					}
+
+					if(o.type == "log") {
+						var logDiv = document.getElementById("logDiv");
+						logDiv.innerHTML = o.data + "<br />" + logDiv.innerHTML;
+					}
 				}
 
 				function sendMessage() {
 					var inputBox = document.getElementById("inputBox");
-					window.sendChatMessage(inputBox.value, function(s) { showMessage(s); }, function(e) { showError(e); });
+					window.sendChatMessage(inputBox.value, function(o) { showMessage(o); }, function(e) { showError(e); });
 				}
 	          </script>
 
@@ -49,10 +57,10 @@ Cordova **www/index.html**
 	        <div class="app">
 	            <h1>Apache Cordova</h1>
 	            <div>
-	            	<button type="button" onclick="window.initChat(function(s) { showMessage(s); }, function(e) { showError(e); }); return false;">Initialize</button>
-	            	<button type="button" onclick="window.advertizeChat(function(s) { showMessage(s); }, function(e) { showError(e); }); return false;">Advertize</button>
-	            	<button type="button" onclick="window.discoverChat(function(s) { showMessage(s); }, function(e) { showError(e); }); return false;">Discover</button>
-	            	<button type="button" onclick="window.connectChat(function(s) { showMessage(s); }, function(e) { showError(e); }); return false;">Connect</button>
+	            	<button type="button" onclick="window.initChat(function(o) { showMessage(o); }, function(e) { showError(e); }); return false;">Initialize</button>
+	            	<button type="button" onclick="window.advertizeChat(function(o) { showMessage(o); }, function(e) { showError(e); }); return false;">Advertize</button>
+	            	<button type="button" onclick="window.discoverChat(function(o) { showMessage(o); }, function(e) { showError(e); }); return false;">Discover</button>
+	            	<button type="button" onclick="window.connectChat(function(o) { showMessage(o); }, function(e) { showError(e); }); return false;">Connect</button>
 	            </div>
 	            <div>
 	            	<input type="text" id="inputBox"></input>
@@ -60,7 +68,8 @@ Cordova **www/index.html**
 	            </div>
 	            <div id="msgDiv">
 	            </div>
+	            <div id="logDiv">
+	            </div>
 	        </div>
 	    </body>
 	</html>
-
