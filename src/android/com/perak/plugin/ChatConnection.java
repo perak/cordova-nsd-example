@@ -97,6 +97,7 @@ public class ChatConnection {
     }
 
     private Socket getSocket() {
+        sendNotification("log", "Tear down");
         return mSocket;
     }
 
@@ -105,6 +106,7 @@ public class ChatConnection {
         Thread mThread = null;
 
         public ChatServer(Handler handler) {
+			sendNotification("log", "ChatServer constructor");
             mThread = new Thread(new ServerThread());
             mThread.start();
         }
@@ -122,6 +124,7 @@ public class ChatConnection {
 
             @Override
             public void run() {
+				sendNotification("log", "ServerThread run");
 
                 try {
                     // Since discovery will happen via Nsd, we don't need to care which port is
@@ -172,13 +175,16 @@ public class ChatConnection {
             private int QUEUE_CAPACITY = 10;
 
             public SendingThread() {
+				sendNotification("log", "SendingThread constructor");
                 mMessageQueue = new ArrayBlockingQueue<String>(QUEUE_CAPACITY);
             }
 
             @Override
             public void run() {
+				sendNotification("log", "SendingThread run");
                 try {
                     if (getSocket() == null) {
+                    	sendNotification("log", "Socket is null, creating socket...");
                         setSocket(new Socket(mAddress, PORT));
                         sendNotification("log", "Client-side socket initialized.");
                     } else {
@@ -193,6 +199,8 @@ public class ChatConnection {
                 } catch (IOException e) {
                     sendNotification("error", "Initializing socket failed, IOE " + e);
                 }
+
+                sendNotification("log", "OK, ready to send messages...");
 
                 while (true) {
                     try {
@@ -236,6 +244,7 @@ public class ChatConnection {
 
         public void tearDown() {
             try {
+                sendNotification("log", "Tear down");
                 getSocket().close();
             } catch (IOException ioe) {
                 sendNotification("error", "Error when closing server socket " + ioe);

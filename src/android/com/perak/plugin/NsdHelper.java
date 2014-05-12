@@ -51,10 +51,11 @@ public class NsdHelper {
             public void onServiceFound(NsdServiceInfo service) {
 				sendNotification("log", "Service discovery success" + service);
                 if (!service.getServiceType().equals(SERVICE_TYPE)) {
-					sendNotification("error", "Unknown Service Type: " + service.getServiceType());
+					sendNotification("log", "Unknown Service Type: " + service.getServiceType());
                 } else if (service.getServiceName().equals(mServiceName)) {
-					sendNotification("error", "Same machine: " + mServiceName);
+					sendNotification("log", "Same machine: " + mServiceName);
                 } else if (service.getServiceName().contains(mServiceName)){
+					sendNotification("log", "Service found: " + service.getServiceName());
                     mNsdManager.resolveService(service, mResolveListener);
                 }
             }
@@ -80,7 +81,7 @@ public class NsdHelper {
 
             @Override
             public void onStopDiscoveryFailed(String serviceType, int errorCode) {
-				sendNotification("error", "Discovery failed: Error code:" + errorCode);
+				sendNotification("error", "Stop discovery failed: Error code:" + errorCode);
                 mNsdManager.stopServiceDiscovery(this);
             }
         };
@@ -91,7 +92,7 @@ public class NsdHelper {
 
             @Override
             public void onResolveFailed(NsdServiceInfo serviceInfo, int errorCode) {
-				sendNotification("error", "Resolve failed" + errorCode);
+				sendNotification("log", "Resolve failed" + errorCode);
             }
 
             @Override

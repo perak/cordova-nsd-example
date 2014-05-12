@@ -60,10 +60,10 @@ public class Disco extends CordovaPlugin {
 	            public void handleMessage(Message msg) {
 	            	String type = msg.getData().getString("type");
 	                String message = msg.getData().getString("msg");
-	            	if(type == "error") {
-	            		cbc.error(message);
-	            		return;
-	            	}
+//	            	if(type == "error") {
+//	            		cbc.error(message);
+//	            		return;
+//	            	}
 
 	            	JSONObject data = new JSONObject();
 	            	try {

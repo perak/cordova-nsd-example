@@ -37,7 +37,7 @@ Cordova **www/index.html**
 				function showMessage(o) {
 					if(o.type == "message") {
 						var msgDiv = document.getElementById("msgDiv");
-						msgDiv.innerHTML = o.data + "<br />" + msgDiv.innerHTML;
+						msgDiv.innerHTML = "<strong>" + o.data + "</strong><br />" + msgDiv.innerHTML;
 					}
 
 					if(o.type == "log") {
@@ -73,3 +73,9 @@ Cordova **www/index.html**
 	        </div>
 	    </body>
 	</html>
+
+Add internet permission to your `platforms/android/AndroidManifest.xml`:
+
+	<uses-permission android:name="android.permission.INTERNET" />
+
+That's it. :)
